@@ -1,0 +1,57 @@
+- name: configure ipa server
+  hosts: all
+  become: yes
+  vars:
+    replica: "{{replica}}"
+    host_name: "{{host_name}}"
+
+  tasks:
+
+    - name: set hostname
+      hostname: 
+        name: "{{host_name}}.ipa.test.lan"
+
+    - name: install epel-release
+      yum:
+        name: epel-release
+        state: present
+        update_cache: yes
+
+    - name: install prereqs
+      yum:
+        name: "{{item}}"
+        state: present
+        update_cache: yes
+      with_items:
+        - ipa-server
+        - ipa-client
+        - ipa-server-dns
+        - ipa-server-trust-ad
+        - ntp
+        - haveged
+
+    - name: copy hosts file
+      template:
+        src: hosts
+        dest: /etc/hosts
+
+    - name: start haveged daemon
+      service: 
+        name: haveged
+        state: started
+  
+    - name: create freeipa server
+      command: >
+        ipa-server-install --realm=IPA.TEST.LAN --domain=ipa.test.lan --ip-address={{ansible_all_ipv4_addresses[1]}} -p testpass -a testpass
+        --setup-dns --forwarder=8.8.8.8 --forwarder=8.8.4.4 -U
+      when: replica != "yes"
+
+    - name: join freeipa to domain
+      command: ipa-client-install --domain=ipa.test.lan --realm=IPA.TEST.LAN -p admin -w testpass 
+      when: replica == "yes"
+
+    - name: become freeipa replica
+      command: > 
+        ipa-replica-install --setup-ca --principal admin -w testpass --setup-dns --setup-ca
+        --ip-address={{ansible_all_ipv4_addresses[1]}} --forwarder=8.8.8.8 --forwarder=8.8.4.4
+      when: replica == "yes"

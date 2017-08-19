@@ -1,0 +1,2 @@
+{{ansible_all_ipv4_addresses[1]}} {{host_name}}.ipa.test.lan {{host_name}}
+127.0.0.1 localhost
