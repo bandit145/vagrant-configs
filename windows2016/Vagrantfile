@@ -2,10 +2,10 @@ Vagrant.configure("2") do |config|
 
   config.vm.provider :virtualbox do |virtualbox|
     virtualbox.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
-    virtualbox.gui = false
+    virtualbox.memory= 4096
   end
   config.vm.box = "mwrock/Windows2016"
-  config.vm.network "private_network", type: "dhcp"
-  #config.vm.provision "shell", inline: "Enable-PsRemoting -Force"
+  config.vm.network "private_network", ip: "192.168.2.2"
+  config.vm.provision "shell", inline: "C:/vagrant/ansible_setup.ps1"
 end
 
