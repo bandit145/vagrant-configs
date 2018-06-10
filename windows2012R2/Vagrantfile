@@ -17,6 +17,7 @@ Vagrant.configure("2") do |config|
     virtualbox.gui = false
   end
   config.vm.box = "mwrock/Windows2012R2"
-  config.vm.network "private_network", type: "dhcp"
-  #config.vm.provision "shell", inline: "Enable-PsRemoting -Force"
+  config.vm.network "private_network", ip: "192.168.2.2"
+  config.vm.provision "shell", inline: "Enable-PSRemoting -Force"
+  config.vm.provision "shell", inline: "C:/vagrant/ansible_setup.ps1"
 end
