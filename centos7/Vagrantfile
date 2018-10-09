@@ -8,11 +8,6 @@ Vagrant.configure("2") do |config|
 				#end
             	client.vm.box = "bento/centos-7"
             	client.vm.network "private_network", ip: "192.168.50.#{i+1}"
-                client.vm.provision "shell", inline: "usermod vagrant -G wheel"
-                client.vm.provision "shell", inline: "ip addr show dev enp0s3 | awk 'NR==2{print \"HWADDR=\"$2}' >> /etc/sysconfig/network-scripts/ifcfg-enp0s3"
-                client.vm.provision "shell", inline: "rm /etc/sysconfig/network-scripts/ifcfg-enp0s8 && cp /vagrant/ifcfg-eth0 /etc/sysconfig/network-scripts/ifcfg-eth0"
-            	client.vm.provision "shell", inline: "ip addr show dev enp0s8 | awk 'NR==2{print \"HWADDR=\"$2}' >> /etc/sysconfig/network-scripts/ifcfg-eth0"
-                client.vm.provision "shell", inline: "cp /vagrant/grub /etc/default/grub && grub2-mkconfig -o /boot/grub2/grub.cfg && reboot"
                 client.vm.synced_folder "E:/github/", "/git"
             end
         end
